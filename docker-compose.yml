@@ -1,0 +1,88 @@
+version: "3"
+
+services:
+  mysql-1:
+    container_name: mysql-1
+    image: percona/percona-xtradb-cluster:5.7
+    ports:
+      - "3306:3306"
+      - "4444:4444"
+      - "4567:4567"
+      - "4568:4568"
+    environment:
+      safe_to_bootstrap: 1
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      CLUSTER_NAME: cluster1
+      wsrep_node_address: ${MYSQL_HOST_1}
+    # command: 
+    #   --wsrep_node_address=${MYSQL_HOST_1}
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/mysql_percona:/var/lib/mysql
+    network_mode: host
+    privileged: true
+    restart: unless-stopped
+
+  mysql-2:
+    container_name: mysql-2
+    image: percona/percona-xtradb-cluster:5.7
+    ports:
+      - "3306:3306"
+      - "4444:4444"
+      - "4567:4567"
+      - "4568:4568"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/mysql_percona:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      CLUSTER_NAME: cluster1
+      CLUSTER_JOIN: ${MYSQL_BOOTSTRAP}
+      wsrep_node_address: ${MYSQL_HOST_2}
+    network_mode: host
+    privileged: true
+    restart: unless-stopped
+
+  mysql-3:
+    container_name: mysql-3
+    image: percona/percona-xtradb-cluster:5.7
+    ports:
+      - "3306:3306"
+      - "4444:4444"
+      - "4567:4567"
+      - "4568:4568"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/mysql_percona:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      CLUSTER_NAME: cluster1
+      CLUSTER_JOIN: ${MYSQL_BOOTSTRAP}
+      wsrep_node_address: ${MYSQL_HOST_3}
+    network_mode: host
+    privileged: true
+    restart: unless-stopped
